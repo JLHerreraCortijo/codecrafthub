@@ -19,6 +19,7 @@ If you are learning REST APIs for the first time, this is a good project because
 - View one course by ID
 - Update an existing course
 - Delete a course
+- Allow standalone frontend dashboards to call the API with CORS headers
 - Validate required fields
 - Validate course status values
 - Validate date format as `YYYY-MM-DD`

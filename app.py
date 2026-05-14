@@ -153,6 +153,15 @@ def handle_storage_error(error):
     return error_response(str(error), 500)
 
 
+@app.after_request
+def add_cors_headers(response):
+    """Allow the standalone dashboard to call the API from another origin."""
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    return response
+
+
 @app.route("/api/courses", methods=["POST"])
 def create_course():
     """Create a new course and store it in courses.json."""
