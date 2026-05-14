@@ -15,6 +15,7 @@ If you are learning REST APIs for the first time, this is a good project because
 
 - Create a new learning course
 - View all saved courses
+- View course statistics
 - View one course by ID
 - Update an existing course
 - Delete a course
@@ -204,7 +205,36 @@ Status: `200 OK`
 ]
 ```
 
-### 3. Get One Course by ID
+### 3. Get Course Statistics
+
+**Endpoint**
+
+```text
+GET /api/courses/stats
+```
+
+**Example Request**
+
+```bash
+curl -i http://127.0.0.1:5000/api/courses/stats
+```
+
+**Successful Response**
+
+Status: `200 OK`
+
+```json
+{
+  "courses_by_status": {
+    "Completed": 1,
+    "In Progress": 1,
+    "Not Started": 2
+  },
+  "total_courses": 4
+}
+```
+
+### 4. Get One Course by ID
 
 **Endpoint**
 
@@ -233,7 +263,7 @@ Status: `200 OK`
 }
 ```
 
-### 4. Update a Course
+### 5. Update a Course
 
 **Endpoint**
 
@@ -269,7 +299,7 @@ Status: `200 OK`
 }
 ```
 
-### 5. Delete a Course
+### 6. Delete a Course
 
 **Endpoint**
 
@@ -347,7 +377,13 @@ curl -i http://127.0.0.1:5000/api/courses
 curl -i http://127.0.0.1:5000/api/courses/1
 ```
 
-### Step 5. Update the course
+### Step 5. Get course statistics
+
+```bash
+curl -i http://127.0.0.1:5000/api/courses/stats
+```
+
+### Step 6. Update the course
 
 ```bash
 curl -i -X PUT http://127.0.0.1:5000/api/courses/1 \
@@ -360,7 +396,7 @@ curl -i -X PUT http://127.0.0.1:5000/api/courses/1 \
   }'
 ```
 
-### Step 6. Delete the course
+### Step 7. Delete the course
 
 ```bash
 curl -i -X DELETE http://127.0.0.1:5000/api/courses/1
@@ -385,6 +421,7 @@ Then, with the Flask server running, execute:
 The script:
 
 - Runs the main CRUD tests
+- Runs the statistics endpoint tests
 - Runs common error-case tests
 - Prints each request, response, and result
 - Temporarily resets `courses.json` for a clean test run

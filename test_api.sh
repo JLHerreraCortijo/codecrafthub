@@ -85,9 +85,10 @@ run_test() {
   local path="$3"
   local expected_status="$4"
   local payload_file="${5:-}"
-  local expected_text="${6:-}"
   local response_file="$TMP_DIR/response.json"
   local actual_status
+  shift 5
+  local expected_texts=("$@")
 
   echo
   echo "Test: $name"
@@ -119,11 +120,13 @@ run_test() {
     return
   fi
 
-  if [[ -n "$expected_text" ]] && ! grep -Fq "$expected_text" "$response_file"; then
-    echo "Result: FAIL (expected text not found: $expected_text)"
-    TEST_FAILED=1
-    return
-  fi
+  for expected_text in "${expected_texts[@]}"; do
+    if [[ -n "$expected_text" ]] && ! grep -Fq "$expected_text" "$response_file"; then
+      echo "Result: FAIL (expected text not found: $expected_text)"
+      TEST_FAILED=1
+      return
+    fi
+  done
 
   echo "Result: PASS"
 }
@@ -153,6 +156,15 @@ run_test \
   '"Flask REST API Basics"'
 
 run_test \
+  "Get course statistics after creating one course" \
+  "GET" \
+  "/api/courses/stats" \
+  "200" \
+  "" \
+  '"total_courses"' \
+  '"Not Started"'
+
+run_test \
   "Get course with ID 1" \
   "GET" \
   "/api/courses/1" \
@@ -166,6 +178,15 @@ run_test \
   "/api/courses/1" \
   "200" \
   "$TMP_DIR/update-course.json" \
+  '"In Progress"'
+
+run_test \
+  "Get course statistics after updating one course" \
+  "GET" \
+  "/api/courses/stats" \
+  "200" \
+  "" \
+  '"courses_by_status"' \
   '"In Progress"'
 
 run_test \

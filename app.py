@@ -15,7 +15,8 @@ app.url_map.strict_slashes = False
 # Store the JSON file in the same folder as this app.py file.
 DATA_FILE = Path(__file__).resolve().parent / "courses.json"
 REQUIRED_FIELDS = ("name", "description", "target_date", "status")
-VALID_STATUSES = {"Not Started", "In Progress", "Completed"}
+STATUS_OPTIONS = ("Not Started", "In Progress", "Completed")
+VALID_STATUSES = set(STATUS_OPTIONS)
 DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
@@ -79,6 +80,21 @@ def get_next_id(courses):
 def find_course(courses, course_id):
     """Find a single course by id, or return None if it does not exist."""
     return next((course for course in courses if course["id"] == course_id), None)
+
+
+def build_course_stats(courses):
+    """Calculate total courses and how many courses belong to each status."""
+    status_counts = {status: 0 for status in STATUS_OPTIONS}
+
+    for course in courses:
+        course_status = course.get("status")
+        if course_status in status_counts:
+            status_counts[course_status] += 1
+
+    return {
+        "total_courses": len(courses),
+        "courses_by_status": status_counts,
+    }
 
 
 def is_blank_string(value):
@@ -171,6 +187,14 @@ def get_courses():
     """Return all stored courses."""
     courses = load_courses()
     return jsonify(courses), 200
+
+
+@app.route("/api/courses/stats", methods=["GET"])
+def get_course_stats():
+    """Return course statistics for the full collection."""
+    courses = load_courses()
+    stats = build_course_stats(courses)
+    return jsonify(stats), 200
 
 
 @app.route("/api/courses/<int:course_id>", methods=["GET"])
